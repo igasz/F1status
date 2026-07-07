@@ -48,7 +48,7 @@ def get_drivers_standing():
 
         print(f"\nF1 DRIVER STANDINGS (SEASON {season})")
         print("-" * 60)
-        print(f"{'Pos.':<5} | {'Driver':<22} | {'Team':<17} | {'Points':<6}")
+        print(f"{'Pos.':<5} | {'Driver':<22} | {'Team':<16} | {'Points':<6}")
         print("-" * 60)
 
         for driver in standings:
@@ -57,7 +57,7 @@ def get_drivers_standing():
             team = driver['Constructors'][0]['name']
             points = driver['points']
             color = get_team_color(team)
-            print(f"{pos:<5} | {name:<22} | {color}{team:<17}{RESET_COLOR} | {points:<6}")
+            print(f"{pos:<5} | {name:<22} | {color}{team:<16}{RESET_COLOR} | {points:<6}")
         print("-" * 60)
 
     except requests.exceptions.RequestException as e:
