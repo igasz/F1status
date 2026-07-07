@@ -63,6 +63,39 @@ def get_drivers_standing():
     except requests.exceptions.RequestException as e:
         print(f"Error fetching driver standings: {e}")
 
+def get_constuctors_standing():
+    url = f"{BASE_URL}/constructorStandings.json"
+
+    try: 
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+
+        standings_list = data['MRData']['StandingsTable']['StandingsLists']
+
+        if not standings_list:
+            return
+        
+        standings = standings_list[0]['ConstructorStandings']
+
+        print(f"\nF1 CONSTRUCTOR STANDINGS")
+        print("-" * 45)
+        print(f"{'Pos.':<5} | {'Team':<22} | {'Points':<6}")
+        print("-" * 45)
+
+        for team_data in standings:
+            pos = team_data['position']
+            team = team_data['Constructor']['name']
+            points = team_data['points']
+            color = get_team_color(team)
+            
+            print(f"{pos:<5} | {color}{team:<22}{RESET_COLOR} | {points:<6}")
+        print("-" * 45)
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching constructor standings: {e}")
+
+
 def get_next_race():
     url = f"{BASE_URL}/next.json"
     try:
@@ -98,4 +131,5 @@ def get_next_race():
 
 if __name__ == "__main__":
     get_drivers_standing()
+    get_constuctors_standing()
     get_next_race()
