@@ -3,10 +3,10 @@
 A simple, colorful Command Line Interface (CLI) tool written in Python that fetches the current Formula 1 standings and upcoming race information directly in your terminal.
 
 ## Features
-* 🏆 **Driver Standings:** Displays the current season's driver championship points and positions.
-* 🏎️ **Constructor Standings:** Shows the current team rankings.
-* 🏁 **Next Race Info:** Provides the grand prix name, circuit location, date, and time.
-* 🎨 **Team Colors:** Automatically colors F1 team names in the terminal with their official branding colors.
+* **Driver Standings:** Displays the current season's driver championship points and positions.
+* **Constructor Standings:** Shows the current team rankings.
+* **Next Race Info:** Provides the grand prix name, circuit location, date, and time.
+* **Team Colors:** Automatically colors F1 team names in the terminal with their official branding colors.
 
 ## Prerequisites
 * Python 3.x
