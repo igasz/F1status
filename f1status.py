@@ -28,81 +28,86 @@ def get_team_color(team_name):
             return color
     return RESET_COLOR
 
-def get_drivers_standing():
-    url = f"{BASE_URL}/driverStandings.json"
-
+def fetch_data(endpoint):
+    url = f"{BASE_URL}/{endpoint}"
     try:
         response = requests.get(url)
         response.raise_for_status()
-        data = response.json()
-
-        standings_list = data['MRData']['StandingsTable']['StandingsLists']
-
-        if not standings_list:
-            print("No standings data available for the current season.")
-            return
-        
-        standings = standings_list[0]['DriverStandings']
-
-        season = data['MRData']['StandingsTable']['season']
-
-        print(f"\nF1 DRIVER STANDINGS (SEASON {season})")
-        print("-" * 60)
-        print(f"{'Pos.':<5} | {'Driver':<22} | {'Team':<16} | {'Points':<6}")
-        print("-" * 60)
-
-        for driver in standings:
-            pos = driver['position']
-            name = f"{driver['Driver']['givenName']} {driver['Driver']['familyName']}"
-            team = driver['Constructors'][0]['name']
-            points = driver['points']
-            color = get_team_color(team)
-            print(f"{pos:<5} | {name:<22} | {color}{team:<16}{RESET_COLOR} | {points:<6}")
-        print("-" * 60)
-
+        return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching driver standings: {e}")
+        print(f"Error fetching data: {e}")
+        return None
+    
 
-def get_constuctors_standing():
-    url = f"{BASE_URL}/constructorStandings.json"
+def show_combined_standings():
+    drivers_data = fetch_data("driverStandings.json")
+    constructors_data = fetch_data("constructorStandings.json")
 
-    try: 
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
+    if not drivers_data or not constructors_data:
+        print("Failed to fetch data.")
+        return
+    
+    try:
+        season = drivers_data['MRData']['StandingsTable']['season']
+        drivers = drivers_data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
+        constructors = constructors_data['MRData']['StandingsTable']['StandingsLists'][0]['ConstructorStandings']
+    except (KeyError, IndexError):
+        print("No standings data available for the current season.")
+        return
+    
+    max_rows = max(len(drivers), len(constructors))
 
-        standings_list = data['MRData']['StandingsTable']['StandingsLists']
+    title_left = f"F1 DRIVER STANDINGS (SEASON {season})"
+    title_right = "F1 CONSTRUCTOR STANDINGS"
 
-        if not standings_list:
-            return
-        
-        standings = standings_list[0]['ConstructorStandings']
+    print(f"\n{title_left:<58}   ||   {title_right}")
+    
+    sep_left = "-" * 58
+    sep_right = "-" * 39
+    print(f"{sep_left}   ||   {sep_right}")
+    
+    header_left = f"{'Pos.':<5} | {'Driver':<22} | {'Team':<16} | {'Points':<6}"
+    header_right = f"{'Pos.':<5} | {'Team':<22} | {'Points':<6}"
+    print(f"{header_left}   ||   {header_right}")
+    
+    print(f"{sep_left}   ||   {sep_right}")
 
-        print(f"\nF1 CONSTRUCTOR STANDINGS")
-        print("-" * 45)
-        print(f"{'Pos.':<5} | {'Team':<22} | {'Points':<6}")
-        print("-" * 45)
+    for i in range(max_rows):
+        # empty
+        row_left = " " * 58
+        row_right = ""
 
-        for team_data in standings:
-            pos = team_data['position']
-            team = team_data['Constructor']['name']
-            points = team_data['points']
+        # drivers
+        if i < len(drivers):
+            d = drivers[i]
+            pos = d['position']
+            name = f"{d['Driver']['givenName']} {d['Driver']['familyName']}"
+            team = d['Constructors'][0]['name']
+            points = d['points']
             color = get_team_color(team)
-            
-            print(f"{pos:<5} | {color}{team:<22}{RESET_COLOR} | {points:<6}")
-        print("-" * 45)
+            row_left = f"{pos:<5} | {name:<22} | {color}{team:<16}{RESET_COLOR} | {points:<6}"
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching constructor standings: {e}")
+        # teams
+        if i < len(constructors):
+            c = constructors[i]
+            pos = c['position']
+            team = c['Constructor']['name']
+            points = c['points']
+            color = get_team_color(team)
+            row_right = f"{pos:<5} | {color}{team:<22}{RESET_COLOR} | {points:<6}"
+        
+        print(f"{row_left}   ||   {row_right}")
 
+    # Bottom edge
+    print(f"{sep_left}   ||   {sep_right}")
 
 def get_next_race():
-    url = f"{BASE_URL}/next.json"
+    data = fetch_data("next.json")
+    
+    if not data:
+        return
+    
     try:
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
-
         races = data['MRData']['RaceTable']['Races']
         
         if not races:
@@ -130,6 +135,5 @@ def get_next_race():
         print(f"Error fetching next race details: {e}")
 
 if __name__ == "__main__":
-    get_drivers_standing()
-    get_constuctors_standing()
+    show_combined_standings()
     get_next_race()

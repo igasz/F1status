@@ -37,7 +37,7 @@ Simply open your terminal (e.g., PowerShell) and type:
 ```Bash
 f1status
 ```
-![alt text](image.png)
+![alt text](image-1.png)
 
 ## Data Source
 This project uses the Jolpica API, an open-source, up-to-date, drop-in replacement for the deprecated Ergast F1 API.
