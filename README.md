@@ -1,4 +1,4 @@
-# F1status# F1 Status CLI 🏎️
+# F1 Status CLI 
 
 A simple, colorful Command Line Interface (CLI) tool written in Python that fetches the current Formula 1 standings and upcoming race information directly in your terminal.
 
